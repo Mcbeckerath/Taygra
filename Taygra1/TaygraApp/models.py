@@ -48,8 +48,7 @@ class SubCategoria(models.Model):
     nome = models.CharField(max_length=100)    
     def __str__(self):
         return self.nome
-
-
+ 
 class Pagamento(models.Model):
     carrinho = models.OneToOneField(Carrinho, on_delete=models.CASCADE)
     total = models.DecimalField(max_digits=10, decimal_places=2)
@@ -68,3 +67,11 @@ class ItemListaDesejos(models.Model):
     produto = models.ForeignKey(Produto, on_delete=models.CASCADE)
     def __str__(self):
         return f"{self.produto.nome} na lista de desejos de {self.lista_desejos.cliente.nome}"
+    
+class Contato(models.Model):
+    assunto = models.CharField(max_length=100)
+    mensagem =models.CharField(max_length=200)
+    email = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.assunto
