@@ -34,7 +34,103 @@
                 </ul>
             </div>
         </div>
+
+        {% if user.is_authenticated %}
+            <div class="dropdown col-auto me-3 m-1">
+                <button class="btn btn-secondary bg-primary h-100 px-3 py-2 dropdown-toggle rounded-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person" viewBox="0 0 16 16">
+                        <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z"/>
+                    </svg>
+                    {{ user.username }}
+                </button>
+                <ul class="dropdown-menu border-0 bg-primary p-0">
+                    <li><a href="#" data-bs-toggle="modal" data-bs-target="#modal-perfil" class="rounded-0 d-block bg-primary btn btn-secondary"> Perfil </a></li>
+                    <li><a href="{% url 'logout' %}" class="rounded-0 bg-primary d-block btn btn-secondary"> Logout </a> </li>
+                </ul>
+            </div>
+            {% else %}
+            <!-- Botões de login e cadastro abrem modais -->
+            <button class="btn col-auto px-3 py-1 my-3 me-3 text-light" data-bs-toggle="modal" data-bs-target="#modal-login"> Login </button>
+            <button class="btn col-auto px-1 py-1 my-3 me-3 text-light" data-bs-toggle="modal" data-bs-target="#modal-cadastro"> Cadastre-se </Cadastre-se> </button>
+            {% endif %}
+        </div>
+        </div>
     </nav>
+
+    <section id="modal-login" class="modal top-0 row align-content-center">
+        <div class="modal-dialog col-10 col-lg-6 mx-auto bg-light rounded">
+            <div class="modal-content p-4">
+                <h2 class="text-center text-dark my-4"> Login </h2>
+                <form method="post" action="{% url 'login' %}" class="row flex-column align-items-end">
+                    {% csrf_token %}
+                    {{loginform.username}}
+                    {{loginform.password}}                        
+                    <div class="col-auto">
+                        <a type="button" class="btn my-3 btn-secondary px-3 py-2" data-bs-dismiss="modal"> Cancelar </a>
+                        <button type="submit" class="btn my-3 btn-success px-3 py-2"> Login </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <section id="modal-cadastro" class="modal top-0 row align-content-center">
+        <div class="modal-dialog col-10 col-lg-6 mx-auto bg-light rounded">
+            <div class="modal-content p-4">
+                <h2 class="text-center text-dark my-4"> Cadastro </h2>
+                <form method="post" action="{% url 'cadastro' %}" class="row flex-column align-items-end">
+                    {% csrf_token %}
+                    <div class="text-danger">
+                        {{usuarioform.errors.first_name}}
+                        {{usuarioform.errors.last_name}}
+                        {{usuarioform.errors.email}}
+                        {{usuarioform.errors.username}}
+                        {{usuarioform.errors.password}}
+                    </div>
+                    <div class="d-flex gap-2">
+                        {{usuarioform.first_name}}
+                        {{usuarioform.last_name}}
+                    </div>
+                    {{usuarioform.email}}
+                    {{usuarioform.username}}
+                    {{usuarioform.password}}
+                    <input name="confirmacao" type="password" placeholder="Confirme a Senha" class="form-control my-2 p-2">
+                    <div class="col-auto">
+                        <a type="button" class="btn my-3 btn-secondary px-3 py-2" data-bs-dismiss="modal"> Cancelar </a>
+                        <button type="submit" class="btn my-3 btn-success px-3 py-2"> Cadastro </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    {% if user.is_authenticated %}
+    <section id="modal-perfil" class="modal top-0 row align-content-center">
+        <div class="modal-dialog col-10 col-lg-6 mx-auto bg-light rounded">
+            <div class="modal-content p-4">
+                <h2 class="text-center text-dark my-4"> Perfil </h2>
+                <form method="post" action="{% url 'editar_perfil' %}" class="row flex-column align-items-end">
+                    {% csrf_token %}
+                    <p>Usuário:</p>
+                    <input type="text" readonly class="form-control-plaintext my-2" value="{{user.username}}">
+
+                    <p>Nome:</p>
+                    <div class="d-flex gap-2">
+                        {{usuarioform.first_name}}
+                        {{usuarioform.last_name}}
+                    </div>
+                    <p>Email:</p>
+                    {{usuarioform.email}}
+                    <div class="col-auto">
+                        <a href="{% url 'delusuario' user %}" type="button" class="my-3 text-danger px-3 py-2 link text-decoration-none"> Encerrar Conta </a>
+                        <a type="button" class="btn my-3 btn-secondary px-3 py-2" data-bs-dismiss="modal"> Cancelar </a>
+                        <button type="submit" class="btn my-3 btn-success px-3 py-2"> Atualizar </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>        
+    {% endif %}
 
     <!-- Cabeçalho -->
     <header class="container-fluid bg-image text-white text-center py-5 position-relative">
@@ -43,7 +139,7 @@
             <img src="{% static 'image1.png' %}" class="img-fluid" alt="Imagem de fundo. Sapatos.">
             <div class="overlay"></div>
         </div>
-        <div class="position-absolute top-50 start-50 translate-middle text-center text-white">
+        <div class="position-absolute top-50 start-50 translate-middle text-center text-black">
             <h1>Bem-vindo à nossa loja de sapatos!</h1>
             <h4>Explore nossa coleção de sapatos elegantes e confortáveis.</h4>
         </div>
@@ -52,7 +148,22 @@
     <!-- Conteúdo -->
     <div class="container">
         <h2 class="text-center mt-5">Nossos Produtos</h2>
-        <!-- Aqui você pode adicionar o conteúdo do seu site -->
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card">
+                    {% load static %}
+                    <img src="{% static 'image2.png' %}" class="card-img-top" alt="Produto 1">
+                    <div class="card-body">
+                        <h5 class="card-title">Sapatênis</h5>
+                        <p class="card-text">Muito confortável e elegante.</p>
+                    </div>
+                    <div class="card-footer">
+                        <small class="text-muted">R$ 5.000,00</small>
+                    </div>
+                </div>
+            </div>
+            <!-- Adicione mais colunas para mais produtos -->
+        </div>
     </div>
 
     <!-- Rodapé -->
